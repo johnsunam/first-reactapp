@@ -3,71 +3,128 @@
 <head lang="en">
     <meta charset="UTF-8">
     <title></title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.3/react.js"></script>
+    < <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.3/react.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.3/JSXTransformer.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+
 </head>
 <body>
 <div id="mount-point"></div>
+<div id="nameList"></div>
 <script type="text/jsx">
 
     /** @jsx React.DOM */
 
 
+//var React=require('react');
+            var ItemList= React.createClass({
 
-    var FilteredList= React.createClass({
-        filterList:function(event)
+    componentWillMount:function()
         {
-            var updatedList=this.state.initialItems;
-            updatedList=updatedList.filter(function(item){
-                return item.toLowerCase().search(event.target.value.toLowerCase())!==-1;
-            });
-            this.setState({items:updatedList});
+            //this.setState({names:this.state.initialNames});
         },
-        getInitialState: function(){
-            return {
-                initialItems: [
-                    "Apples",
-                    "Broccoli",
-                    "Chicken",
-                    "Duck",
-                    "Eggs",
-                    "Fish",
-                    "Granola",
-                    "Hash Browns"
-                ],
-                items: []
+
+                render:function(){
+            var self=this;
+            var listOfName= this.props.items.map(function(name) {
+                return <li key={name.id}><div>{name.type}
+                    <button type="button" id="delete" value={name.id} data-id={name.id} className="btn btn-warning" onClick={self.onDelete}>delete</button>
+                    <button type="button" className="btn btn-primary">edit</button>
+
+                </div></li>
+            });
+
+            return(
+                    <div className="well">
+                <div>
+                    <ul>
+
+                    {listOfName}
+
+                    </ul>
+
+                </div>
+            </div>)
+        },
+        onDelete:function(e){
+        e.preventDefault();
+        var nameId=e.target.value
+            this.props.onRemove(nameId);
+
+        }
+
+
+    });
+
+    var Main=React.createClass({
+
+        getInitialState:function() {
+            return{
+                names:[
+                    {id:"john",type:"john"},
+                    {id:"hari",type:"hari"},
+                    {id:"ram",type:"ram"}
+                ]
             }
         },
-        componentWillMount: function(){
-            this.setState({items: this.state.initialItems})
+        remove: function(nameId) {
+
+            var names = this.state.names.filter(function (nm) {
+                return nameId !== nm.id;
+            });
+            this.setState({names:names});
         },
-        render: function(){
+
+        pushName:function(newelement){
+                        element={
+                        id:newelement,
+                        type:newelement
+                    }
+            this.setState({names: this.state.names.concat([element])});
+        },
+
+        render:function(){
             return (
-                    <div className="filter-list">
-                        <input type="text" placeholder="Search" onChange={this.filterList}/>
-                        <List items={this.state.items}/>
+                    <div className="row">
+                            <div className="col-md-12">
+                                <FilteredList createList={this.pushName} />
+                            </div>
+                            <div className="col-md-12">
+                                    <ItemList items={this.state.names} onRemove={this.remove} />
+                            </div>
                     </div>
-            );
-        }
-    });
-    var List = React.createClass({
-        render: function(){
-            return (
-                    <ul>
-      {
-              this.props.items.map(function(item) {
-                  return <li key={item}>{item}</li>
-              })
-              }
-                    </ul>
             )
         }
     });
 
+    var FilteredList= React.createClass({
+        onSubmit:function(e){
+            e.preventDefault();
+//            var form=e.target;
+            var content=e.target.name.value;
+
+            this.props.createList(content);
+
+        },
+
+        render: function() {
+            return (<div className="well col-md-4">
+                <form  method="post" onSubmit={this.onSubmit}>
+                    <input className="form-control" id="name" type="text" placeholder="name" name="names"/>
+                    <button type="submit" className="btn btn-default">create</button>
+                </form>
+            </div>
+            )
+        }
+
+    });
 
 
-    React.render(<FilteredList/>, document.getElementById('mount-point'));
+
+
+   // React.render(<FilteredList/>, document.getElementById('mount-point'));
+    React.render(<Main />,document.getElementById('nameList'));
 </script>
 </body>
 </html>

@@ -20,7 +20,8 @@
  * @providesModule AutoFocusMixin
  * @typechecks static-only
  */
-
+"use strict";
+  //module.exports=require('./lib/React');
 "use strict";
 
 var focusNode = _dereq_("./focusNode");
